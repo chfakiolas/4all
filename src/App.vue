@@ -1,47 +1,57 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { ref, onMounted } from "vue";
+
+const vote = ref<string>();
+const background = ref<string>('bg-1');
+
+const calcVH = () => {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+onMounted()
+
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+<div class="val-container" :class="background">
+  <div class="valentine-container">
+    <img class="voteimg" src="/valentine.png" alt="Valentine vote image">
+  </div>
+  <div class="mid">
+    <img class="choose-side" src="/choose-your-side.png" alt="Valentine vote image">
+  </div>
+  <div class="antivalentine-container">
+    <img class="voteimg" src="/antivalentine.png" alt="Valentine vote image">
+  </div>
+</div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+.val-container {
+  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
+  background-size: cover;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 }
-
-.logo {
+.bg-1 {
+  background-image: url("/bg-1.png");
+}
+.bg-2 {
+  background-image: url("/bg-2.png");
+}
+.voteimg {
+  max-width: 100%;
+  width: 70vw;
   display: block;
-  margin: 0 auto 2rem;
+  margin: auto;
 }
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.choose-side {
+  max-width: 100%;
+  width: 85vw;
+  display: block;
+  margin: auto;
 }
 </style>
