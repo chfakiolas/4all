@@ -1,13 +1,13 @@
-export const progressBar = (selector: string, speed: number) => {
+export const progressBar = (selector: string, filledBarNumSelector: string, remainingBarNumSelector:string, speed: number) => {
 	let barSpeed = speed;
 	const bar = document.querySelector(selector);
+    const filledBarNum = document.querySelector(filledBarNumSelector);
+    const remainingBarNum:  HTMLElement | null = document.querySelector(remainingBarNumSelector);
 	
     if(bar) {
         const item: HTMLElement | null  = document.querySelector('.progress');
-        console.log(item);
         if(item) {
             let itemValue:number | null = Number(item.dataset.progress);
-            console.log(itemValue);
             if(itemValue) {
                 var i = 0;
                 // var value = $(this);
@@ -15,11 +15,14 @@ export const progressBar = (selector: string, speed: number) => {
                 var count = setInterval(function(){
                     if(i <= itemValue) {
                         var iStr = i.toString();
+
                         item.style.width = iStr+'%';
-                        // css({
-                        //     'width': 
-                        // });
-                        // value.find('.item_value').html(iStr +'%');
+                        if(filledBarNum)
+                            filledBarNum.innerHTML = iStr+'%';
+
+                        if(remainingBarNum && Number(remainingBarNum.dataset.percentage) >= i) {
+                            remainingBarNum.innerHTML = iStr+'%';
+                        }
                     }
                     else {
                         clearInterval(count);

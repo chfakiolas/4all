@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, Transition, h } from "vue";
+import axios from "axios";
+import { progressBar } from "./utils/bar";
+
+const http = axios;
+
+// http.get('https://rickandmortyapi.com/api').then(res => {
+//   console.log(res.data);
+// });
 
 const vote = ref<string>();
 const voted = ref(false);
@@ -8,13 +16,14 @@ const background = ref<string>('bg-1');
 const submitVote = (usrVote: string) => {
   vote.value = usrVote;
   voted.value = true;
-  console.log(vote.value);
+  
   if(vote.value === 'antivalentine') {
-    background.value = 'bg-1';
+    background.value = 'bg-2';
   }
   setTimeout(() => {
-    progressBar('.progress', 15);
-  }, 200)
+    setAntivalentineNum('.antivalentine-percentage');
+    progressBar('.progress', '.valentine-percentate', '.antivalentine-percentage', 15);
+  }, 50)
 }
 
 const calcVH = () => {
@@ -24,6 +33,14 @@ const calcVH = () => {
 onMounted(()=>{
   calcVH();
 })
+
+const setAntivalentineNum = (selector: string) => {
+  const antiValNumEl: HTMLElement | null = document.querySelector(selector);
+  if(antiValNumEl) {
+    let percentage = antiValNumEl.dataset.percentage;
+    antiValNumEl.style.marginRight = Number(percentage) / 4 + '%';
+  }
+}
 
 
 </script>
@@ -45,9 +62,9 @@ onMounted(()=>{
     <div class="val-inner-container" v-if="voted">
       <div class="text" :class="vote">Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis animi aliquid fuga nemo autem.</div>
       <div class="item_bar cell">
-        <span style="color: aliceblue">35</span>
+        <span class="antivalentine-percentage" data-percentage="35">35</span>
         <div class="progress" data-progress="65">
-          <span>65</span>
+          <span class="valentine-percentate">65</span>
         </div>
       </div>
     </div>
@@ -103,6 +120,9 @@ onMounted(()=>{
   min-height: 0;
   min-width: 0;
   width: 100%;
+  display: flex;
+  justify-content: end;
+  align-items: center;
 }
 .item_bar .progress {
   position: absolute;
@@ -121,8 +141,15 @@ onMounted(()=>{
   justify-content: center;
   align-items: center;
 }
-.item_bar .progress > span {
+.item_bar .valentine-percentate {
+  font-family: 'RobotoFlex';
   color: #fff;
+  font-size: 30px;
+  font-weight: 600;
+}
+.item_bar .antivalentine-percentage {
+  font-family: 'RobotoFlex';
+  color: #DE002D;
   font-size: 30px;
   font-weight: 600;
 }
@@ -140,5 +167,26 @@ onMounted(()=>{
 }
 .text.antivalentine {
   color: #DE002D;
+}
+.item_bar::before,
+.item_bar::after {
+  content: '';
+  background: url('/percentage-shadow.png');
+  position: absolute;
+  z-index: 10;
+  width: 40px;
+  height: 100%;
+  opacity: 0.3;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.item_bar::before {
+  left: 1%;
+  top: 6%;
+}
+.item_bar::after {
+  transform: rotate(180deg);
+  bottom: 2%;
+  right: 1%;
 }
 </style>
