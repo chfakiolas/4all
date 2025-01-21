@@ -19,6 +19,7 @@ const props = defineProps<{
 </script>
 <style scoped>
 .url {
+    width: 30%;
     margin-bottom: 35px;
 }
 .url > a {
@@ -42,10 +43,12 @@ img {
 .action-icon {
     width: 65px;
     margin-bottom: 10px;
-    height: 55px;
+    height: 6vh;
     object-fit: contain;
 }
 .logo {
     width: 65px;
+    height: 3vh;
+    object-fit: contain;
 }
 </style>

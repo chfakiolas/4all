@@ -5,6 +5,8 @@ import { progressBar } from "./utils/bar";
 import ActionButton from "./components/ActionButton.vue";
 
 const http = axios;
+// const baseUrl=import.meta.env.VITE_BASE_URL;
+
 
 // http.get('https://rickandmortyapi.com/api').then(res => {
 //   console.log(res.data);
@@ -17,8 +19,8 @@ const vote = ref<string>('');
 const voted = ref(false);
 const background = ref<string>('bg-1');
 const resultHeart: ResultHeartImgs = {
-  valentine: "/valentine-heart.png",
-  antivalentine: "/antivalentine-heart.png"
+  valentine: "valentine-heart.png",
+  antivalentine: "antivalentine-heart.png"
 }
 
 const submitVote = (usrVote: string) => {
@@ -67,9 +69,11 @@ const setAntivalentineNum = (selector: string) => {
     </div>
   </div>
   <transition name="fade" mode="out-in">
-    <div class="val-inner-container" v-if="voted">
-      <div class="text" :class="vote">Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis animi aliquid fuga nemo autem.</div>
-      <img class="res-heart" :src="resultHeart[vote]" alt="heart">
+    <div class="val-inner-container results-container" v-if="voted">
+      <div class="text" :class="vote">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis animi aliquid fuga nemo autem.
+        <img style="display: block;" class="res-heart" :src="resultHeart[vote]" alt="heart">
+      </div>
       <div class="bar-container">
         <div class="bar-text-container">
           <img src="/valentine-title.png" alt="Valentine">
@@ -88,31 +92,31 @@ const setAntivalentineNum = (selector: string) => {
           <action-button
           :title="'Καταστήματα'"
           :href="'https://4allstores.gr/find-a-store'"
-          :img="'/stores-icon.png'"
+          :img="'stores-icon.png'"
           :id="'v-strore-locator'"
           ></action-button>
           <action-button
           :title="'Καφές'"
           :href="'https://4allstores.gr/#high-quality-cofee'"
-          :img="'/coffee-icon.png'"
+          :img="'coffee-icon.png'"
           :id="'v-coffee'"
           ></action-button>
           <action-button
           :title="'Προσφορές'"
           :href="'https://4allstores.gr/prosfores-3'"
-          :img="'/drinks-icon.png'"
+          :img="'drinks-icon.png'"
           :id="'v-prosfores'"
           ></action-button>
           <action-button
           :title="'Franchise'"
           :href="'https://4allstores.gr/franchise'"
-          :img="'/franchise.png'"
+          :img="'franchise.png'"
           :id="'v-franchise'"
           ></action-button>
           <action-button
           :title="'Εργασία'"
           :href="'https://4allstores.gr/kariera-2-2'"
-          :img="'/ergasia.png'"
+          :img="'ergasia.png'"
           :id="'v-ergasia'"
           ></action-button>
         </div>
@@ -126,7 +130,7 @@ const setAntivalentineNum = (selector: string) => {
 <style scoped>
 .val-container {
   height: 100vh;
-  height: calc(var(--vh, 1vh) * 100);
+  /* height: calc(var(--vh, 1vh) * 100); */
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -144,9 +148,10 @@ const setAntivalentineNum = (selector: string) => {
 }
 .voteimg {
   max-width: 100%;
-  width: 70vw;
+  width: 33vh;
   display: block;
   margin: auto;
+  animation:pulse 1s infinite;
 }
 .choose-side {
   max-width: 100%;
@@ -156,7 +161,8 @@ const setAntivalentineNum = (selector: string) => {
 }
 .item_bar {
   position: relative;
-  height: 3rem;
+  /* height: 3rem; */
+  height: 6vh;
   width: 100%;
   background-color: #000;
   border-radius: 14px;
@@ -182,7 +188,8 @@ const setAntivalentineNum = (selector: string) => {
   top: 0;
   bottom: 0;
   width: 0;
-  height: 3rem;
+  /* height: 3rem; */
+  height: 6vh;
   margin: 0;
   background-color: #DE002D;
   border-radius: 12px;
@@ -196,23 +203,25 @@ const setAntivalentineNum = (selector: string) => {
 .item_bar .valentine-percentate {
   font-family: 'RobotoFlex';
   color: #fff;
-  font-size: 30px;
+  /* font-size: 1.875rem; */
+  font-size: 3vh;
   font-weight: 600;
 }
 .item_bar .antivalentine-percentage {
   font-family: 'RobotoFlex';
   color: #DE002D;
-  font-size: 30px;
+  /* font-size: 1.875rem; */
+  font-size: 3vh;
   font-weight: 600;
 }
 .text {
   font-family: "PFFreeScript";
-  font-size: 25px;
+  font-size: 3vh;
   text-align: center;
-  max-width: 70vw;
+  max-width: 340px;
   margin-left: auto;
   margin-right: auto;
-  line-height: 35px;
+  line-height: 6vh;
 }
 .text.valentine {
  color: #000;
@@ -243,7 +252,8 @@ const setAntivalentineNum = (selector: string) => {
 }
 .res-heart {
   max-width: 100%;
-  width: 100px;
+  /* width: 100px; */
+  width: 8vh;
   margin-left: auto;
   margin-right: auto;
 }
@@ -269,5 +279,11 @@ const setAntivalentineNum = (selector: string) => {
 }
 action-button {
   width: 30%;
+}
+.results-container {
+  padding-top: 30px;
+}
+@keyframes pulse {
+	10% {transform: scale(1.1)}
 }
 </style>
