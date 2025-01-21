@@ -10,3 +10,9 @@
     font-family: 'RobotoFlex';
     src: url('./fonts/RobotoFlex.ttf')  format('truetype');
 }
+body {
+    margin: 0;
+}
+#app {
+    overflow: hidden;
+}
