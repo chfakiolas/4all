@@ -6,7 +6,29 @@ import ActionButton from "./components/ActionButton.vue";
 
 const http = axios;
 // const baseUrl=import.meta.env.VITE_BASE_URL;
-
+const valentineMessages = {
+  valentine: {
+    1: "Για την αθεράπευτα ρομαντική ψυχή σου, Cappuccino με Espresso Baroness Arabica 100% από τα 4allStores! Κάθε γουλιά, ξεχειλίζει έρωτα!",
+    2: "Για μεγάλους έρωτες, Espresso σε μέγεθος Extra Extra Large από τα 4allStores! Μεγάλοι έρωτες = Μεγάλοι καφέδες!",
+    3: "Για μεγάλους έρωτες, Macchiato με Espresso 4all Classic από τα 4allStores! Μικρός σε μέγεθος, μεγάλος σε ένταση!",
+    4: "Απολαύστε παρέα από έναν Extra Extra Large Espresso 4all Classic και δείτε το ρομαντισμό σας να ξεχειλίζει…",
+    5: "Πρόσφερε στο ταίρι σου Freddo Espresso 4all Classic και διεκδίκησε από κάθε του γουλιά μια υπόσχεση αγάπης!",
+    6: "Αν οι καρδιές σας χτυπούν δυνατά, χρειάζεστε από μια ισχυρή δόση Espresso Baroness Arabica 100% από τα 4allStores!",
+    7: "Στη μικρή ζωή μας, οι Μεγάλοι Έρωτες χρειάζονται καθημερινά τουλάχιστον έναν Extra Extra Large Καφέ από τα 4allStores!",
+    8: "Αν ο έρωτας σου είχε γεύση Espresso, θα ήταν του Baroness Arabica 100% από τα 4allStores! Αρωματικός, γευστικός, γεμάτος ένταση!",
+    9: "Σου’χει κλέψει την καρδιά & δεν το βλέπει; ‘’Άνοιξε του τα μάτια’’ με Espresso 4all Classic! Κάθε γουλιά, ξεχειλίζει έρωτα!"
+  },
+  antivalentine: {
+    1: "Μιας και ο φτερωτός Άγγελος τα βρήκε σκούρα μαζί σου, Freddo Cappuccino 4all Classic! Τον απολαμβάνεις.. χωρίς δράματα!",
+    2: "Όταν ο έρωτας σε απογοητεύει, απολαμβάνεις Espresso Baroness Arabica 100% από τα 4allStores! Δεν θα σε προδώσει ποτέ!",
+    3: "Όταν οι σχέσεις χρειάζονται θυσίες, εσύ απλώς χρειάζεσαι καλό καφέ! Espresso Baroness Arabica 100% από τα 4allStores!",
+    4: "Αν ο καφές είναι η μοναδική σου αγάπη, κρατάς στα χέρια σου το σωστό ποτήρι! 4allCoffee-Απόλαυσε τον με την ησυχία σου!",
+    5: "Όταν ο έρωτας γίνει πονοκέφαλος, γιατρειά βρίσκεις σε έναν Extra Extra Large Cappuccino από τα 4allStores!",
+    6: "Δεν έχει απαιτήσεις και σου είναι πάντα πιστός. Ποιος είναι; Espresso 4all Classic: Πάντα πιστός!",
+    7: "Το ‘’ελεύθερο πνεύμα’’ σου απαιτεί επιλογές στον έρωτα όπως στον καφέ σου. Ποσότητα-Ποιότητα-Ποικιλία στον καφέ, βρίσκεις στα 4all! Για τον έρωτα, η αναζήτηση συνεχίζεται.",
+    8: "Για την αθεράπευτα ΑΝΤΙ-ρομαντική ψυχή σου, προτείνεται σταθερά ποιοτικός καφές! Espresso 4all Classic! Γευστική πανδαισία σε κάθε γουλιά!"
+  }
+}
 
 // http.get('https://rickandmortyapi.com/api').then(res => {
 //   console.log(res.data);
@@ -24,6 +46,11 @@ const resultHeart: ResultHeartImgs = {
 }
 
 const submitVote = (usrVote: string) => {
+  http.post(import.meta.env.VITE_API_URL + '/wp-json/valentines/v1/vote', {
+    vote_type: usrVote
+  }).then(res => {
+    console.log(res.data);
+  });
   vote.value = usrVote;
   voted.value = true;
   
@@ -215,13 +242,13 @@ const setAntivalentineNum = (selector: string) => {
   font-weight: 600;
 }
 .text {
-  font-family: "PFFreeScript";
+  font-family: "AC-FatCord";
   font-size: 3vh;
   text-align: center;
   max-width: 340px;
   margin-left: auto;
   margin-right: auto;
-  line-height: 6vh;
+  line-height: 5vh;
 }
 .text.valentine {
  color: #000;
@@ -275,7 +302,7 @@ const setAntivalentineNum = (selector: string) => {
 .urls-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: center;
 }
 action-button {
   width: 30%;

@@ -3,12 +3,12 @@
     src: url('./fonts/OpenSans-Bold.ttf')  format('truetype');
 }
 @font-face {
-    font-family: 'PFFreeScript';
-    src: url('./fonts/PFFreeScript Bold.ttf')  format('truetype');
-}
-@font-face {
     font-family: 'RobotoFlex';
     src: url('./fonts/RobotoFlex.ttf')  format('truetype');
+}
+@font-face {
+    font-family: 'AC-FatCord';
+    src: url('./fonts/AC-FatCord.ttf')  format('truetype');
 }
 body {
     margin: 0;
