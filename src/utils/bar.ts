@@ -18,7 +18,7 @@ export const progressBar = (selector: string, filledBarNumSelector: string, rema
 
                         item.style.width = iStr+'%';
                         if(filledBarNum)
-                            filledBarNum.innerHTML = iStr+'%';
+                            filledBarNum.innerHTML = Math.round(Number(iStr))+'%';
 
                         if(remainingBarNum && Number(remainingBarNum.dataset.percentage) >= i) {
                             remainingBarNum.innerHTML = Math.round(Number(remainingBarNum.dataset.percentage))+'%';
