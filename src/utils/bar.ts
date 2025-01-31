@@ -21,7 +21,7 @@ export const progressBar = (selector: string, filledBarNumSelector: string, rema
                             filledBarNum.innerHTML = iStr+'%';
 
                         if(remainingBarNum && Number(remainingBarNum.dataset.percentage) >= i) {
-                            remainingBarNum.innerHTML = iStr+'%';
+                            remainingBarNum.innerHTML = Math.round(Number(remainingBarNum.dataset.percentage))+'%';
                         }
                     }
                     else {
