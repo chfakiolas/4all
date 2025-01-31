@@ -7,7 +7,7 @@ export const progressBar = (selector: string, filledBarNumSelector: string, rema
     if(bar) {
         const item: HTMLElement | null  = document.querySelector('.progress');
         if(item) {
-            let itemValue:number | null = Number(item.dataset.progress);
+            let itemValue:number | null = Number(item.dataset.percentage);
             if(itemValue) {
                 var i = 0;
                 // var value = $(this);

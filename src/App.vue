@@ -3,10 +3,14 @@ import { ref, onMounted, Transition, h } from "vue";
 import axios from "axios";
 import { progressBar } from "./utils/bar";
 import ActionButton from "./components/ActionButton.vue";
+import { useVoteStore } from "./stores/voteStore";
+import { couldStartTrivia } from "typescript";
 
 const http = axios;
-// const baseUrl=import.meta.env.VITE_BASE_URL;
-const valentineMessages = {
+const voteStore = useVoteStore();
+const comingSoonActive = ref(false);
+
+const valentineMessages: { [key: string]: { [key: number]: string } } = {
   valentine: {
     1: "Για την αθεράπευτα ρομαντική ψυχή σου, Cappuccino με Espresso Baroness Arabica 100% από τα 4allStores! Κάθε γουλιά, ξεχειλίζει έρωτα!",
     2: "Για μεγάλους έρωτες, Espresso σε μέγεθος Extra Extra Large από τα 4allStores! Μεγάλοι έρωτες = Μεγάλοι καφέδες!",
@@ -22,39 +26,49 @@ const valentineMessages = {
     1: "Μιας και ο φτερωτός Άγγελος τα βρήκε σκούρα μαζί σου, Freddo Cappuccino 4all Classic! Τον απολαμβάνεις.. χωρίς δράματα!",
     2: "Όταν ο έρωτας σε απογοητεύει, απολαμβάνεις Espresso Baroness Arabica 100% από τα 4allStores! Δεν θα σε προδώσει ποτέ!",
     3: "Όταν οι σχέσεις χρειάζονται θυσίες, εσύ απλώς χρειάζεσαι καλό καφέ! Espresso Baroness Arabica 100% από τα 4allStores!",
-    4: "Αν ο καφές είναι η μοναδική σου αγάπη, κρατάς στα χέρια σου το σωστό ποτήρι! 4allCoffee-Απόλαυσε τον με την ησυχία σου!",
+    4: "Αν ο καφές είναι η μοναδική σου αγάπη, κρατάς στα χέρια σου το σωστό ποτήρι! Καφές 4all! Απόλαυσε τον με την ησυχία σου!",
     5: "Όταν ο έρωτας γίνει πονοκέφαλος, γιατρειά βρίσκεις σε έναν Extra Extra Large Cappuccino από τα 4allStores!",
-    6: "Δεν έχει απαιτήσεις και σου είναι πάντα πιστός. Ποιος είναι; Espresso 4all Classic: Πάντα πιστός!",
-    7: "Το ‘’ελεύθερο πνεύμα’’ σου απαιτεί επιλογές στον έρωτα όπως στον καφέ σου. Ποσότητα-Ποιότητα-Ποικιλία στον καφέ, βρίσκεις στα 4all! Για τον έρωτα, η αναζήτηση συνεχίζεται.",
-    8: "Για την αθεράπευτα ΑΝΤΙ-ρομαντική ψυχή σου, προτείνεται σταθερά ποιοτικός καφές! Espresso 4all Classic! Γευστική πανδαισία σε κάθε γουλιά!"
+    6: "Δεν έχει απαιτήσεις και σου είναι πάντα πιστός. Ποιος είναι; Ο Espresso 4all Classic!",
+    7: "Το ‘’ελεύθερο πνεύμα’’ σου απαιτεί επιλογές στον έρωτα όπως και στον καφέ σου. Για ποιότητα, ποσότητα, ποικιλία καφέ, έρχεσαι 4allStores. Για τον έρωτα… η αναζήτηση συνεχίζεται.",
+    8: "Για την αθεράπευτα ΑΝΤΙ&#8209;ρομαντική ψυχή σου, προτείνεται σταθερά ποιοτικός καφές! Espresso 4all Classic! Γευστική πανδαισία σε κάθε γουλιά!"
   }
 }
 
-// http.get('https://rickandmortyapi.com/api').then(res => {
-//   console.log(res.data);
-// });
 interface ResultHeartImgs {
   [key: string]: string;
 }
 
-const vote = ref<string>('');
-const voted = ref(false);
+// const vote = ref<string>('');
+// const voted = ref(false);
 const background = ref<string>('bg-1');
 const resultHeart: ResultHeartImgs = {
   valentine: "valentine-heart.png",
   antivalentine: "antivalentine-heart.png"
 }
 
-const submitVote = (usrVote: string) => {
-  http.post(import.meta.env.VITE_API_URL + '/wp-json/valentines/v1/vote', {
+const getMessage = (voteType: ('valentine' | 'antivalentine')): string => {
+  const messages = valentineMessages[voteType];
+  const keys = Object.keys(messages);
+  const randomKey = keys[Math.floor(Math.random() * keys.length)];
+  return messages[Number(randomKey)];
+}
+
+const submitVote = async (usrVote: ('valentine' | 'antivalentine')) => {
+  const message = getMessage(usrVote);
+  await http.post('https://4allstores.gr/wp-json/valentines/v1/vote', {
     vote_type: usrVote
   }).then(res => {
-    console.log(res.data);
+    // console.log(res.data);
   });
-  vote.value = usrVote;
-  voted.value = true;
+
+  voteStore.setVote(usrVote, message);
+
+  await http.get('https://4allstores.gr/wp-json/valentines/v1/totals').then(res => {
+    const percentages = calculatePercentages(res.data);
+    setPercentages(percentages);
+  });
   
-  if(vote.value === 'antivalentine') {
+  if(voteStore.vote === 'antivalentine') {
     background.value = 'bg-2';
   }
   setTimeout(() => {
@@ -67,8 +81,54 @@ const calcVH = () => {
   const vh = window.innerHeight * 0.01;
   document.documentElement.style.setProperty('--vh', `${vh}px`);
 }
+
+const displayComingSoon = () => {
+  const nowDate = new Date();
+  const comingSoonDate = new Date('2025-01-31T11:59:59');
+
+  if(nowDate < comingSoonDate) {
+    comingSoonActive.value = true;
+  }
+}
+const getRandomVoteType = (): 'valentine' | 'antivalentine' => {
+  const voteTypes: Array<'valentine' | 'antivalentine'> = ['valentine', 'antivalentine'];
+  const randomIndex = Math.floor(Math.random() * voteTypes.length);
+  return voteTypes[randomIndex];
+}
+
+const displayResults = async () => {
+  const randomVotePick = getRandomVoteType();
+  const message = getMessage(randomVotePick);
+
+  voteStore.setVote(randomVotePick, message);
+
+  await http.get('https://4allstores.gr/wp-json/valentines/v1/totals').then(res => {
+    const percentages = calculatePercentages(res.data);
+    setPercentages(percentages);
+  });
+  
+  if(voteStore.vote === 'antivalentine') {
+    background.value = 'bg-2';
+  }
+  setTimeout(() => {
+    setAntivalentineNum('.antivalentine-percentage');
+    progressBar('.progress', '.valentine-percentate', '.antivalentine-percentage', 15);
+  }, 50)
+}
+
+const gameOver = () => {
+  const nowDate = new Date();
+  const gameEndDate = new Date('2025-02-16T23:59:59');
+  if(nowDate > gameEndDate) {
+    displayResults();
+    voteStore.voted = true;
+  }
+}
+
 onMounted(()=>{
   calcVH();
+  displayComingSoon();
+  gameOver();
 })
 
 const setAntivalentineNum = (selector: string) => {
@@ -79,12 +139,45 @@ const setAntivalentineNum = (selector: string) => {
   }
 }
 
+const calculatePercentages = (data: { valentine: number, antivalentine: number }) => {
+  const totalVotes = data.valentine + data.antivalentine;
+  const valentinePercentage = totalVotes === 0 ? 0 : (data.valentine / totalVotes) * 100;
+  const antivalentinePercentage = totalVotes === 0 ? 0 : (data.antivalentine / totalVotes) * 100;
+  return { valentine: valentinePercentage, antivalentine: antivalentinePercentage };
+}
+
+const setPercentages = (percentages: { valentine: number, antivalentine: number }) => {
+  const valentinePercentageEl: HTMLElement | null = document.querySelector('.valentine-percentate');
+  const valentinePercentageProgressEl: HTMLElement | null = document.querySelector('.progress');
+  const antivalentinePercentageEl: HTMLElement | null = document.querySelector('.antivalentine-percentage');
+  if(valentinePercentageEl && antivalentinePercentageEl && valentinePercentageProgressEl) {
+    valentinePercentageEl.textContent = `${percentages.valentine}%`;
+    valentinePercentageProgressEl.dataset.percentage = `${percentages.valentine}`;
+    antivalentinePercentageEl.textContent = `${percentages.antivalentine}%`;
+    antivalentinePercentageEl.dataset.percentage = `${percentages.antivalentine}`;
+    if (percentages.valentine <= 15)
+      valentinePercentageEl.style.display = 'none';
+
+    if (percentages.antivalentine <= 15)
+      antivalentinePercentageEl.style.display = 'none';
+  }
+}
+
 
 </script>
 
 <template>
 <div class="val-container" :class="background">
-  <div class="val-inner-container" v-if="!voted">
+  <div class="val-inner-container coming-soon" v-if="comingSoonActive">
+    <div>
+      <h1><span class="val">Valentine</span> <span class="vs">VS</span> ANTI-VALENTINE</h1>
+      <h2 class="text-ln-1"> 01-16 Φεβρουαρίου 2025</h2>
+      <h2 class="text-ln-2"> Ποια πλευρά λες να κερδίσει;</h2>
+    </div>
+    <img style="display: block;" class="res-heart" src="/valentine-heart.png" alt="heart">
+  </div>
+
+  <div class="val-inner-container" v-if="!voteStore.voted && !comingSoonActive">
     <div class="valentine-container">
       <img class="voteimg" src="/valentine.png" alt="Valentine vote image" @click="submitVote('valentine')">
     </div>
@@ -96,10 +189,10 @@ const setAntivalentineNum = (selector: string) => {
     </div>
   </div>
   <transition name="fade" mode="out-in">
-    <div class="val-inner-container results-container" v-if="voted">
-      <div class="text" :class="vote">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis animi aliquid fuga nemo autem.
-        <img style="display: block;" class="res-heart" :src="resultHeart[vote]" alt="heart">
+    <div class="val-inner-container results-container" v-if="voteStore.voted">
+      <div class="text" :class="voteStore.vote">
+        <span v-html="voteStore.message"></span>
+        <img style="display: block;" class="res-heart" :src="resultHeart[voteStore.vote]" alt="heart">
       </div>
       <div class="bar-container">
         <div class="bar-text-container">
@@ -108,7 +201,7 @@ const setAntivalentineNum = (selector: string) => {
         </div>
         <div class="item_bar cell">
           <span class="antivalentine-percentage" data-percentage="35">35</span>
-          <div class="progress" data-progress="65">
+          <div class="progress" data-percentage="65">
             <span class="valentine-percentate">65</span>
           </div>
         </div>
@@ -309,6 +402,34 @@ action-button {
 }
 .results-container {
   padding-top: 30px;
+}
+.coming-soon {
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+.coming-soon h1{
+  font-family: "RobotoFlex";
+  font-size: 3vh;
+}
+.coming-soon h1 .val {
+  color: #DE002D;
+}
+.coming-soon h1 .vs {
+  display: block;
+}
+.coming-soon h2{
+  font-family: "RobotoFlex";
+  font-size: 3vh;
+}
+.coming-soon .res-heart {
+  animation:pulse 1s infinite;
+}
+.coming-soon .text-ln-1 {
+  margin-bottom: 0;
+}
+.coming-soon .text-ln-2 {
+  margin-top: 10px;
 }
 @keyframes pulse {
 	10% {transform: scale(1.1)}
